@@ -204,7 +204,6 @@ $(document).ready(function () {
   }
 
   //event handlers
-  // https://www.hashbangcode.com/article/prevent-enter-key-submitting-forms-jquery
   // now allows for both a click and enter key to search
   function searchCityWeather() {
     let cityName = $("#citySearch").val();
