@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Weather Dashboard</title>
+  <title>This is the weather report of the week!</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
   <link rel="stylesheet" href="./assets/style.css">
@@ -14,8 +14,8 @@
 <body>
   <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <h1 class="navbar-item subtitle">
-        Weather Dashboard
+      <h1 class="navbar-item is-family-monospace subtitle">
+        This is the weather report of the week!
       </h1>
     </div>
     <div class="navbar-menu">
@@ -56,7 +56,7 @@
         <div class="tile is-ancestor">
           <div class="tile is-parent">
             <article class="tile is-child" style="text-align:center">
-              <p class="subtitle" style="font-weight: 600">5 Day Forecast</p>
+              <p class="subtitle is-family-monospace" style="font-weight: 600">5 Day Forecast</p>
             </article>
           </div>
         </div>
@@ -85,7 +85,7 @@
     <div class="column is-one-quarter-desktop">
       <section class="section">
         <nav class="panel">
-          <p class="panel-heading" style="font-size:medium; text-align:center">
+          <p class="panel-heading is-family-monospace" style="font-size:medium; text-align:center">
             Search for a city
           </p>
           <div class="panel-block">
@@ -104,7 +104,7 @@
           <!-- insert searched cities below -->
           <div id="cityHistoryContainer"></div>
           <div class="panel-block">
-            <button id="clear" class="button is-link is-outlined is-danger is-fullwidth">
+            <button id="clear" class="button is-link is-family-monospace is-outlined is-danger is-fullwidth">
               Clear History
             </button>
           </div>
@@ -113,6 +113,10 @@
     </div>
     <!-- end search panel -->
   </div>
+    <!-- end main body -->
+    <div>
+
+    </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
