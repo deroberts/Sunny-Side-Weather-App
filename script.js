@@ -125,7 +125,7 @@ $(document).ready(function () {
     });
   }
 
-  function addToHistory(civName) {
+  function addSearchHistory(civName) {
     villageHistory.push(civName);
     localStorage.setItem("villageHistory", JSON.stringify(villageHistory));
     let newAtag = $("<a>");
@@ -152,7 +152,7 @@ $(document).ready(function () {
       "&units=imperial" +
       "&APPID=" +
       APIKEY;
-    addToHistory(civName);
+    addSearchHistory(civName);
     getCurrentWeather(civName);
     getFiveDayForecast(civName);
   }
