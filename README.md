@@ -27,7 +27,7 @@ git clone https://github.com/your-username/weather-dashboard.git
 Then open the index.html file in your web browser.
 
 ## Screenshots
-![Screenshot 2023-03-01 195309](https://user-images.githubusercontent.com/112577325/222310919-85c92efc-1d72-4b09-ba40-860760e96a56.png)
+![image](https://user-images.githubusercontent.com/112577325/223924190-694822a0-3101-4e85-b1b8-ea9c744a6144.png)
 
 ## Deployment
 
@@ -36,4 +36,3 @@ https://deroberts.github.io/Sunny-Side-Weather-App/
 ## Credits
 OpenWeather API
 Bulma.io
-Geolocation API

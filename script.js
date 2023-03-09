@@ -2,119 +2,50 @@ $(document).ready(function () {
   console.log("hooray it works, finally");
   // openweathermap api key
   const APIKEY = "41ea4a85cfbbfb9d089175fe1df741b6";
-  // local storage create array
-  let cityHistory = [];
-  if (localStorage.getItem("cityHistory")) {
-    cityHistory = JSON.parse(localStorage.getItem("cityHistory"));
-    createHistoryList(cityHistory);
+  // local storage for city/village/civilization array
+  let villageHistory = [];
+  if (localStorage.getItem("villageHistory")) {
+    villageHistory = JSON.parse(localStorage.getItem("villageHistory"));
+    createVillageList(villageHistory);
   }
-
-  // check if geolocation is available in browser
-  if ("geolocation" in navigator) {
-    // geolocation is available /
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        // hide progress bar and show main content
-        $("progress").attr("style", "display:none");
-        $("#main").removeAttr("style");
-        getCurrentFromCoordinates(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      function (error) {
-        // If user doesn't want to use current location
-        if (error.code === error.PERMISSION_DENIED) {
-          $("#progressBar").attr("style", "display:none");
-          $("#main").removeAttr("style");
-          if (cityHistory[0]) {
-            getCurrentWeather(cityHistory[cityHistory.length - 1]);
-            getFiveDayForecast(cityHistory[cityHistory.length - 1]);
-          } else {
-            getCurrentWeather("Kansas City");
-            getFiveDayForecast("Kansas City");
-          }
-        }
-      }
-    );
-  } else {
-    // geolocation IS NOT available //
-    $("#progressBar").attr("style", "display:none");
+// removes styling from main element
     $("#main").removeAttr("style");
-    if (cityHistory[0]) {
-      getCurrentWeather(cityHistory[cityHistory.length - 1]);
-      getFiveDayForecast(cityHistory[cityHistory.length - 1]);
-    } else {
-      getCurrentWeather("Kansas City");
-      getFiveDayForecast("Kansas City");
-    }
-  }
 
-  function createHistoryList(historyArray) {
-    for (let i = 0; i < historyArray.length; i++) {
+  function createVillageList(villageArray) {
+    for (let i = 0; i < villageArray.length; i++) {
+      // creates a new anchor tag element
       let newAtag = $("<a>");
-      newAtag.attr("class", "panel-block");
-      newAtag.text(historyArray[i]);
-      newAtag.attr("id", historyArray[i]);
-      $("#cityHistoryContainer").prepend(newAtag);
+      newAtag.attr("class", "panel-block");  // set the class attribute to panel-block
+      newAtag.text(villageArray[i]);
+      newAtag.attr("id", villageArray[i]);  // set the text content of the <a> element to the name of the "village"
+      $("#villageHistoryContainer").prepend(newAtag); // inserts the <a> element at the beginning of the container element 
     }
   }
 
-  function getCurrentFromCoordinates(lat, lon) {
-    $.ajax({
-      url:
-        "https://api.openweathermap.org/data/2.5/weather?" +
-        "lat=" +
-        lat +
-        "&lon=" +
-        lon +
-        "&units=imperial" +
-        "&APPID=" +
-        APIKEY,
-      method: "GET",
-    }).then(function (response) {
-      getFiveDayForecast(response.name);
-      // addToHistory(response.name)
-      getUVIndex(response.coord.lat, response.coord.lon);
-      $("#headerCity").text("Current location: " + response.name);
-      $("#currentIcon").attr(
-        "src",
-        "https://openweathermap.org/img/wn/" +
-          response.weather[0].icon +
-          "@2x.png"
-      );
-      $("#currentCity").text(response.name);
-      $("#currentDate").text(moment().format("MMMM Do, YYYY"));
-      $("#currentTemperature").text(
-        "Current Temperature: " + response.main.temp.toFixed() + "°"
-      );
-      $("#currentHumidity").text("Humidity: " + response.main.humidity + "%");
-      $("#currentWindSpeed").text(
-        "Wind Speed: " + response.wind.speed + " mph"
-      );
-    });
-  }
+ 
 
-  function getCurrentWeather(cityName) {
+  function getCurrentWeather(civName) {
     $.ajax({
+      // in this code civ is short for civilization
+      // sends an AJAX request to the openweathermap api to get the current weather for the specified location
       url:
         "https://api.openweathermap.org/data/2.5/weather?q=" +
-        cityName +
+        civName +
         "&units=imperial" +
         "&APPID=" +
         APIKEY,
       method: "GET",
-    }).then(function (response) {
+    }).then(function (response) { // Callback function to be executed when the API response is received
       getUVIndex(response.coord.lat, response.coord.lon);
-      $("#currentIcon").attr(
+      $("#weatherIcon").attr(
         "src",
         "https://openweathermap.org/img/wn/" +
           response.weather[0].icon +
           "@2x.png"
       );
       $("#currentCity").text(response.name);
-      $("#currentDate").text(moment().format("MMMM Do, YYYY"));
-      $("#currentTemperature").text(
+      $("#currentDate").text(moment().format("MMMM Do, YYYY")); // uses moment.js to format the date
+      $("#currentTemperature").text(  // set the text content of an element with id "currentTemperature" to display the current temperature in degrees Fahrenheit
         "Current Temperature: " + response.main.temp.toFixed() + "°"
       );
       $("#currentHumidity").text("Humidity: " + response.main.humidity + "%");
@@ -124,54 +55,60 @@ $(document).ready(function () {
     });
   }
 
-  // getFiveDayForecast("https://api.openweathermap.org/data/2.5/forecast?q=" + "miami" + "&units=imperial" + "&APPID=" + APIKEY)
-  function getFiveDayForecast(cityName) {
+ // function to get the 5 day forecast for the specified location 
+  function getFiveDayForecast(civName) {
     $.ajax({
       url:
         "https://api.openweathermap.org/data/2.5/forecast?q=" +
-        cityName +
+        civName +
         "&units=imperial" +
         "&APPID=" +
         APIKEY,
+        // makes a GET request to the openweathermap api
       method: "GET",
     }).then(function (response) {
+      // empty array to store the forecast for the next five days
       let fiveDayForecast = [];
+      // looping through the array
       for (let i = 0; i < response.list.length; i++) {
         let hr = response.list[i].dt_txt.split(" ")[1];
-        //00:00:00 is 7:00 PM eastern time
-        //I want to set each day's data to around noon, so 18:00 is 1:00pm
+        // checks the api response for the time. If the time is 6pm, it will push the response to the fiveDayForecast array
         if (hr === "18:00:00") {
           fiveDayForecast.push(response.list[i]);
         }
       }
-      for (let j = 0; j < fiveDayForecast.length; j++) {
-        $("#day" + (j + 1)).empty();
-        const newDayOfWeek = $("<div>");
-        newDayOfWeek.text(moment(fiveDayForecast[j].dt_txt).format("dddd"));
-        newDayOfWeek.attr("style", "font-weight:600");
+      for (let f = 0; f < fiveDayForecast.length; f++) {
+        // empties div contents
+        $("#day" + (f + 1)).empty();
+        // creates new divs and appends them to the page
+        const brandNewDay = $("<div>");
+        brandNewDay.text(moment(fiveDayForecast[f].dt_txt).format("dddd"));
+        brandNewDay.attr("style", "font-weight:600");
+        // creates a new div element to display the date
         const newDivDate = $("<div>");
-        newDivDate.text(moment(fiveDayForecast[j].dt_txt).format("MM/DD/YYYY"));
-        const newImgIcon = $("<img>").attr(
+        newDivDate.text(moment(fiveDayForecast[f].dt_txt).format("MM/DD/YYYY"));
+        // creates a new img element to display the weather icon provided by the openweathermap api
+        const newWeatherIcon = $("<img>").attr(
           "src",
           "https://openweathermap.org/img/wn/" +
-            fiveDayForecast[j].weather[0].icon +
+            fiveDayForecast[f].weather[0].icon +
             "@2x.png"
         );
         const newDivTemp = $("<div>");
-        newDivTemp.text(fiveDayForecast[j].main.temp.toFixed() + "°");
+        newDivTemp.text(fiveDayForecast[f].main.temp.toFixed() + "°");
         const newHumidityDiv = $("<div>");
-        newHumidityDiv.text(fiveDayForecast[j].main.humidity + "% Humidity");
-        $("#day" + (j + 1)).append(
-          newDayOfWeek,
+        newHumidityDiv.text(fiveDayForecast[f].main.humidity + "% Humidity");
+        $("#day" + (f + 1)).append(
+          brandNewDay,
           newDivDate,
-          newImgIcon,
+          newWeatherIcon,
           newDivTemp,
           newHumidityDiv
         );
       }
     });
   }
-
+// function to get the UV index for the specified location
   function getUVIndex(lat, lon) {
     $.ajax({
       url:
@@ -188,55 +125,60 @@ $(document).ready(function () {
     });
   }
 
-  function addToHistory(cityName) {
-    cityHistory.push(cityName);
-    localStorage.setItem("cityHistory", JSON.stringify(cityHistory));
+  function addToHistory(civName) {
+    villageHistory.push(civName);
+    localStorage.setItem("villageHistory", JSON.stringify(villageHistory));
     let newAtag = $("<a>");
     newAtag.attr("class", "panel-block");
-    newAtag.text(cityName);
-    newAtag.attr("id", cityName);
-    $("#cityHistoryContainer").prepend(newAtag);
+    newAtag.text(civName);
+    newAtag.attr("id", civName);
+    $("#villageHistoryContainer").prepend(newAtag);
   }
 
+  // function to clear the local storage in the container. Event listener is at bottom
   function clear() {
-    $("#cityHistoryContainer").text("");
+    $("#villageHistoryContainer").text("");
     localStorage.clear();
   }
 
-  //event handlers
-  // now allows for both a click and enter key to search
-  function searchCityWeather() {
-    let cityName = $("#citySearch").val();
+//  city search function that takes the input from the search bar and uses it to get the weather for that city
+
+  function villageWeatherSearch() {
+    let civName = $("#citySearch").val();
     $("#citySearch").val("");
-    const queryURL =
+    const apiLink =
       "https://api.openweathermap.org/data/2.5/weather?q=" +
-      cityName +
+      civName +
       "&units=imperial" +
       "&APPID=" +
       APIKEY;
-    addToHistory(cityName);
-    getCurrentWeather(cityName);
-    getFiveDayForecast(cityName);
+    addToHistory(civName);
+    getCurrentWeather(civName);
+    getFiveDayForecast(civName);
   }
+
+  // event listeners to search weather in a location
 
   $("#citySearch").on("keydown", function (e) {
     if (e.keyCode == 13) {
       e.preventDefault();
-      searchCityWeather();
+      villageWeatherSearch();
     }
   });
 
   $("#searchButton").on("click", function (e) {
     e.preventDefault();
-    searchCityWeather();
+    villageWeatherSearch();
   });
-  $("#cityHistoryContainer").on("click", function (e) {
+
+  //  allows user to click on a city in the history and get the weather for that city
+  $("#villageHistoryContainer").on("click", function (e) {
     if (e.target.matches("a")) {
       e.preventDefault();
-      // change this later to data id?
-      let cityName = e.target.id;
-      getCurrentWeather(cityName);
-      getFiveDayForecast(cityName);
+  
+      let civName = e.target.id;
+      getCurrentWeather(civName);
+      getFiveDayForecast(civName);
     }
   });
 
